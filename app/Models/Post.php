@@ -33,7 +33,7 @@ class Post extends Model
         'slug',
         'status',
         'content',
-        'author',
+        'user_id',
     ];
 
     // to check if a user is verified
@@ -58,7 +58,7 @@ class Post extends Model
     * return the sluggable configuration array for this modle
     * @return array
     **/
-    public function sluggable()
+    public static function sluggable()
     {
     	return [
     		'slug' => [

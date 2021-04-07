@@ -50,7 +50,7 @@ class PostTransformer extends TransformerAbstract
                 ],
                 [
                     "rel" => 'self',
-                    "href" => route('user.show', $post->author)
+                    "href" => route('user.show', $post->user_id)
                 ],
             ]
         ];

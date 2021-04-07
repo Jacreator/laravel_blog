@@ -21,13 +21,13 @@ class CreatePostsTable extends Migration
             $table->string('image');
             $table->string('status')->default(Post::UNVERIFIED_POST);
             $table->string('content');
-            $table->bigInteger('author')->unsigned();
+            $table->bigInteger('user_id')->unsigned();
             $table->timestamps();
             $table->softDeletes();
         });
 
         Schema::table('posts', function ($table) {
-            $table->foreign('author')->references('id')->on('Users');;
+            $table->foreign('user_id')->references('id')->on('Users');;
         });
     }
 

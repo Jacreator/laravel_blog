@@ -2,17 +2,17 @@
 
 namespace App\Http\Controllers\User;
 
-use App\Http\Controllers\ApiController;
+use App\Models\User;
 use Illuminate\Http\Request;
+use App\Http\Controllers\ApiController;
 
 class UserController extends ApiController
 {
     public function __construct()
     {
-        $this->middleware('auth:api', ['except' => ['store']]);
         parent::__construct();
 
-        $this->middleware('trasform.input:' . UserTransformer::class)->only(['store', 'update']);
+        $this->middleware(['trasform.input:' . UserTransformer::class])->only(['store', 'update']);
     }
     /**
      * Display a listing of the resource.

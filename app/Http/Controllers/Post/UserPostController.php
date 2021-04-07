@@ -6,39 +6,28 @@ use App\Models\Post;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\ApiController;
-use Illuminate\Support\Facades\Storage;
-use Symfony\Component\HttpKernel\Exception\HttpException;
+use App\Transformers\User\UserTransformer;
 
-class PostController extends ApiController
+class UserPostController extends ApiController
 {
-    /**
-     * Create a new AuthController instance.
-     *
-     * @return void
-     */
-    // public function __construct() {
-    //     $this->middleware('auth:api');
-    // }
+    public function __construct()
+    {
+        parent::__construct();
+
+        // $this->middleware('trasform.input:' . UserTransformer::class)->only(['store', 'update']);
+    }
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(User $user)
     {
-        $post = Post::all();
-        return $this->showAll($post);
-    }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Post $post)
-    {
-        return $this->showOne($post);
+        $posts = $user->posts;
+
+
+        return $this->showAll($posts);
     }
 
     /**
@@ -57,25 +46,36 @@ class PostController extends ApiController
         ];
 
         // perform validation
-        $this->validate($request, $rules);
+        $this->validate($request->all(), $rules);
 
         // post instance
         $post = new Post;
         // check input feild and make password hash
         $post['title'] = $request->title;
-        // $post['slug'] = Post::sluggable();
+        $post['slug'] = Post::sluggable();
         $post['image'] = $request->image->store('');
         $post['status'] = Post::UNVERIFIED_POST;
         $post['content'] = $request->content;
         $post['user_id'] = $user->id;
 
         if ($user->isVerified()) {
-            // create post
+            // create users
             $post = $post->save();
-            return response()->json('Post Created successfully', 201);
+            return $this->showOne($post);
         } else {
             return $this->errorResponse("Sorry you verify your account before you can create a post", 409);;
         }
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function show(Post $post)
+    {
+        //
     }
 
     /**
@@ -117,17 +117,17 @@ class PostController extends ApiController
         }
 
         // check if any value was changed
-        if (!$user->isDirty()) {
+        if (!$post->isDirty()) {
             return $this->errorResponse('You need to specify at least one different value to update', 422);
         }
 
         // check if the author and the user updating is the same
-        if ($this->postOwner($user, $post) || $user->isAdmin) {
-
+        if (postOwner($user, $post) && $user->isAdmin) {
             $post->save();
-            // save post information
-            return $this->showOne($post, 201);
-        }    
+        }
+
+        // save post information
+        return $this->showOne($post, 201);
     }
 
     /**
@@ -138,7 +138,7 @@ class PostController extends ApiController
      */
     public function destroy(User $user, Post $post)
     {
-        if ($user->isAdmin() || $this->postOwner($user, $post)) {
+        if ($user->isAdmin() && $user->isVerified() ) {
             Storage::delete($post->image);
             $post->delete();
         }
@@ -148,7 +148,7 @@ class PostController extends ApiController
 
     protected function postOwner(User $user, Post $post)
     {
-        if ($user->id != $post->user_id) {
+        if ($user->id != $post->author) {
             throw new HttpException(422, 'the Specified User is not the actual Owner for the product');
         }
     }

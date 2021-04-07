@@ -39,6 +39,6 @@ $factory->define(Post::class, function (Faker $faker) {
         'image' => $faker->randomElement(['1.jpg', '2.jpg', '3.jpg', '4.jpg', '5.jpg']),
         'status' => $verified = $faker->randomElement([Post::VERIFIED_POST, Post::UNVERIFIED_POST]),
         'content' => $faker->paragraph(2),
-        'author' => User::all()->random()->id,
+        'user_id' => User::all()->random()->id,
     ];
 });
