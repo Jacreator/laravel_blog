@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\ApiController;
 use Illuminate\Support\Facades\Storage;
+use App\Transformers\Post\PostTransformer;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class PostController extends ApiController
@@ -16,9 +17,10 @@ class PostController extends ApiController
      *
      * @return void
      */
-    // public function __construct() {
-    //     $this->middleware('auth:api');
-    // }
+    public function __construct() {
+        $this->middleware(['transform.input:' . PostTransformer::class])->only(['store', 'update']);
+        $this->middleware('auth:api');
+    }
     /**
      * Display a listing of the resource.
      *
