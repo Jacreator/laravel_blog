@@ -63,7 +63,6 @@ class PostController extends ApiController
         $post = new Post;
         // check input feild and make password hash
         $post['title'] = $request->title;
-        // $post['slug'] = Post::sluggable();
         $post['image'] = $request->image->store('');
         $post['status'] = Post::UNVERIFIED_POST;
         $post['content'] = $request->content;
@@ -72,7 +71,7 @@ class PostController extends ApiController
         if ($user->isVerified()) {
             // create post
             $post = $post->save();
-            return response()->json('Post Created successfully', 201);
+            return $this->showMessage('Post Created successfully', 201);
         } else {
             return $this->errorResponse("Sorry you verify your account before you can create a post", 409);;
         }

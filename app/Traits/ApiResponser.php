@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Cache;
 
 trait ApiResponser{
-    private function successResponse($data, $code){
+    protected function successResponse($data, $code){
         return response()->json($data, $code);
     }
 

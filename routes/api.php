@@ -29,6 +29,7 @@ Route::group([
     Route::get('/user-profile', 'Auth\AuthController@userProfile')->name('profile');
        // Post route
 	Route::ApiResource('post', 'Post\PostController', ['except' => ['update', 'update', 'destroy']]);
+	
 	Route::put('user/{user}/post/{post}', 'Post\PostController@update')->name('post.update'); 
 	Route::post('user/{user}/post', 'Post\PostController@store')->name('post.create');
 	Route::delete('user/{user}/post/{post}', 'Post\PostController@destroy')->name('post.delete');

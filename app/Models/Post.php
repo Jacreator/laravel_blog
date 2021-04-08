@@ -3,15 +3,15 @@
 namespace App\Models;
 
 use App\Models\User;
+use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Model;
 use App\Transformers\Post\PostTransformer;
-use Cviebrock\EloquentSluggable\Sluggable;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Concerns\belongsTo;
 
 class Post extends Model
 {
-    use SoftDeletes, Sluggable;
+    use SoftDeletes;
 
     // soft delete colume
     protected $date = ['deleted_at'];
@@ -46,25 +46,13 @@ class Post extends Model
     public function setTitleAttribute($title)
     {
         $this->attributes['title'] = strtolower($title);
+        $this->attributes['slug'] = Str::slug($title);
     }
 
     // getter for title
     public function getTitleAttribute($title)
     {
         return ucwords($title);
-    }
-
-    /**
-    * return the sluggable configuration array for this modle
-    * @return array
-    **/
-    public static function sluggable()
-    {
-    	return [
-    		'slug' => [
-    			'source' => 'title'
-    		]
-    	];
     }
 
     public function author()
